@@ -1,124 +1,131 @@
-# Conversational Agent Platform - Streamlit Version
+# Conversational Agent Platform
 
-A conversational AI agent platform built with Streamlit, featuring debug mode, message analysis, and workflow visualization.
+A modern conversational AI agent platform built with React, featuring a yellow.ai-inspired interface with advanced debugging and analysis capabilities.
 
-## Features
+## 🚀 Features
 
-- 🤖 **Conversational Interface**: Chat with an AI agent
-- 🔍 **Debug Mode**: View processing logs and metrics for each message
-- 📊 **Analysis Panel**: Analyze, solve, and improve conversations
-- 📈 **Message Metrics**: Cost, token usage, and latency tracking
-- 🎯 **Workflow Visualization**: Interactive flowchart of conversation flow
-- 📝 **Do Later**: Save items for later review
-- 🎨 **Responsive Design**: Clean, modern interface
+- **Interactive Chat Interface** - Real-time conversation with AI agents
+- **Debug Mode** - Toggle debug features with detailed message analysis
+- **Message Metrics** - View cost, tokens, and latency for each response
+- **Conversation History** - Manage and replay previous sessions
+- **Analysis Panel** - Detailed conversation analysis and improvement suggestions
+- **Workflow Visualization** - Interactive flowchart of conversation flows
+- **Collapsible Sidebars** - Customizable interface layout
+- **Sample Conversations** - Pre-loaded test cases and scenarios
 
-## Quick Start
+## 🛠️ Tech Stack
 
-### Local Development
+- **React 18** - Modern React with hooks
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Beautiful icon library
 
-1. **Install Dependencies**
+## 📦 Installation
+
+1. **Clone the repository**
    ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/nishantmanjunath-coder/Co-pilot_UI.git
+   cd Co-pilot_UI
    ```
 
-2. **Run the Application**
+2. **Install dependencies**
    ```bash
-   streamlit run streamlit_app.py
+   npm install
    ```
 
-3. **Open in Browser**
-   - The app will automatically open at `http://localhost:8501`
-   - If not, manually navigate to the URL shown in the terminal
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-### Streamlit Cloud Deployment
+4. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-1. **Fork this Repository**
-   - Go to the repository on GitHub
-   - Click "Fork" to create your own copy
+## 🏗️ Build for Production
 
-2. **Deploy to Streamlit Cloud**
-   - Go to [share.streamlit.io](https://share.streamlit.io)
-   - Sign in with your GitHub account
-   - Click "New app"
-   - Select your forked repository
-   - Set the main file path to `streamlit_app.py`
-   - Click "Deploy"
+```bash
+npm run build
+```
 
-3. **Your App is Live!**
-   - Streamlit will provide you with a public URL
-   - Share the URL with others to access your app
+The built files will be in the `dist` directory.
 
-## Usage
+## 🎯 Usage
 
 ### Basic Chat
-1. Use the sidebar quick actions to load sample conversations
-2. Type messages in the input field
-3. Click "Send" to chat with the agent
+- Type messages in the input field at the bottom
+- Send messages to start a conversation with the AI agent
+- View responses with detailed metrics (cost, tokens, latency)
 
 ### Debug Mode
-1. Toggle "Debug Mode" in the sidebar
-2. View processing logs above each assistant message
-3. See metrics (cost, tokens, latency) below messages
-4. Click "Select Message" to view detailed debug information
+- Toggle "Debug Mode" in the left sidebar
+- Click on agent messages to select them for debugging
+- View detailed traces and logs in the debug panel
+- Open workflow visualizations
+
+### Sample Conversations
+- Use "Quick Actions" to load sample conversations
+- Browse "History" to access previous sessions
+- Replay conversations to see the flow
 
 ### Analysis Panel
-1. Use the "Analyze", "Solve", and "Improve" tabs
-2. Click "Do Later" to save items for later review
-3. Click "Replay" to regenerate conversations
+- Available when debug mode is enabled
+- View conversation analysis and improvement suggestions
+- Use "Do Later" to add items to your todo list
+- Replay conversations with detailed insights
 
-### Workflow Visualization
-1. Enable Debug Mode
-2. Click "Open Flowchart" in the sidebar
-3. View the conversational workflow diagram
-
-## File Structure
+## 📁 Project Structure
 
 ```
-├── streamlit_app.py      # Main Streamlit application
-├── requirements.txt      # Python dependencies
-└── README.md            # This file
+src/
+├── components/
+│   ├── AnalysisPanel.jsx    # Analysis and improvement panel
+│   ├── ChatInterface.jsx    # Main chat interface
+│   ├── DebugPanel.jsx       # Debug information panel
+│   ├── HistoryPanel.jsx     # Conversation history
+│   ├── Message.jsx          # Individual message component
+│   ├── Sidebar.jsx          # Left sidebar with controls
+│   └── TopNavigation.jsx    # Top navigation bar
+├── App.jsx                  # Main application component
+├── index.css               # Global styles
+└── main.jsx                # Application entry point
 ```
 
-## Customization
+## 🎨 Customization
 
-### Adding New Conversations
-Edit the `sample_conversations` dictionary in `streamlit_app.py` to add new sample conversations.
+The app uses Tailwind CSS for styling. You can customize:
+- Colors in `tailwind.config.js`
+- Global styles in `src/index.css`
+- Component-specific styles using Tailwind classes
 
-### Modifying Styling
-Update the CSS in the `st.markdown()` section at the top of `streamlit_app.py`.
+## 🚀 Deployment
 
-### Adding Features
-The app is modular - you can easily add new features by:
-1. Adding new session state variables
-2. Creating new UI components
-3. Implementing new functionality
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Deploy automatically on every push to main branch
 
-## Troubleshooting
+### Netlify
+1. Build the project: `npm run build`
+2. Deploy the `dist` folder to Netlify
 
-### Common Issues
+### GitHub Pages
+1. Build the project: `npm run build`
+2. Push the `dist` folder to a `gh-pages` branch
+3. Enable GitHub Pages in repository settings
 
-1. **App won't start**
-   - Ensure you have Python 3.7+ installed
-   - Check that all dependencies are installed: `pip install -r requirements.txt`
+## 🤝 Contributing
 
-2. **Styling issues**
-   - Clear browser cache
-   - Check browser console for errors
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -m 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
 
-3. **Performance issues**
-   - Reduce the number of messages in session state
-   - Optimize the CSS and HTML rendering
+## 📄 License
 
-### Getting Help
+This project is licensed under the MIT License.
 
-- Check the [Streamlit documentation](https://docs.streamlit.io)
-- Visit the [Streamlit community forum](https://discuss.streamlit.io)
-- Open an issue in this repository
+## 🙏 Acknowledgments
 
-## License
-
-This project is open source and available under the MIT License.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- Inspired by yellow.ai's conversational AI platform
+- Built with modern React and Tailwind CSS
+- Icons provided by Lucide React
