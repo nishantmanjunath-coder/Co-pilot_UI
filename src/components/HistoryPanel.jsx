@@ -1,35 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-function HistoryPanel({ collapsed, onToggle, onSessionClick, onReplay, onShare, isReplaying }) {
+function HistoryPanel({ collapsed, onToggle, onSessionClick, onReplay, onShare, isReplaying, conversationVersions, currentVersion, onLoadVersion }) {
   const historyData = {
-    'Sessions': [
-      { name: 'Session 1', timestamp: '2 hours ago', lastModified: '10:30 AM' },
-      { name: 'Session 2', timestamp: '1 day ago', lastModified: '2:15 PM' },
-      { name: 'Session 3', timestamp: '3 days ago', lastModified: '4:45 PM' },
-      { name: 'Session 4', timestamp: '1 week ago', lastModified: '6:20 PM' }
+    'Instances': [
+      { name: 'Instance 1', timestamp: '2 hours ago', lastModified: '10:30 AM', id: 'instance_1' },
+      { name: 'Instance 2', timestamp: '1 day ago', lastModified: '2:15 PM', id: 'instance_2' },
+      { name: 'Instance 3', timestamp: '3 days ago', lastModified: '4:45 PM', id: 'instance_3' },
+      { name: 'Instance 4', timestamp: '1 week ago', lastModified: '6:20 PM', id: 'instance_4' }
     ],
     'Failed test cases': [
-      { name: 'Session 1', timestamp: '4 hours ago', lastModified: '9:15 AM' },
-      { name: 'Session 2', timestamp: '2 days ago', lastModified: '11:30 AM' },
-      { name: 'Session 3', timestamp: '5 days ago', lastModified: '3:45 PM' },
-      { name: 'Session 4', timestamp: '1 week ago', lastModified: '5:20 PM' }
+      { name: 'Instance 1', timestamp: '4 hours ago', lastModified: '9:15 AM' },
+      { name: 'Instance 2', timestamp: '2 days ago', lastModified: '11:30 AM' },
+      { name: 'Instance 3', timestamp: '5 days ago', lastModified: '3:45 PM' },
+      { name: 'Instance 4', timestamp: '1 week ago', lastModified: '5:20 PM' }
     ],
     'Failed production cases': [
-      { name: 'Session 1', timestamp: '6 hours ago', lastModified: '8:30 AM' },
-      { name: 'Session 2', timestamp: '1 day ago', lastModified: '10:45 AM' },
-      { name: 'Session 3', timestamp: '2 days ago', lastModified: '2:15 PM' },
-      { name: 'Session 4', timestamp: '4 days ago', lastModified: '4:30 PM' }
+      { name: 'Instance 1', timestamp: '6 hours ago', lastModified: '8:30 AM' },
+      { name: 'Instance 2', timestamp: '1 day ago', lastModified: '10:45 AM' },
+      { name: 'Instance 3', timestamp: '2 days ago', lastModified: '2:15 PM' },
+      { name: 'Instance 4', timestamp: '4 days ago', lastModified: '4:30 PM' }
     ],
     'External Sessions': [
-      { name: 'Session 1', timestamp: '1 hour ago', lastModified: '9:00 AM' },
-      { name: 'Session 2', timestamp: '1 day ago', lastModified: '11:00 AM' },
-      { name: 'Session 3', timestamp: '2 days ago', lastModified: '1:30 PM' },
-      { name: 'Session 4', timestamp: '3 days ago', lastModified: '3:00 PM' }
+      { name: 'Instance 1', timestamp: '1 hour ago', lastModified: '9:00 AM' },
+      { name: 'Instance 2', timestamp: '1 day ago', lastModified: '11:00 AM' },
+      { name: 'Instance 3', timestamp: '2 days ago', lastModified: '1:30 PM' },
+      { name: 'Instance 4', timestamp: '3 days ago', lastModified: '3:00 PM' }
     ]
   }
 
   const [openDropdown, setOpenDropdown] = useState(null)
   const [collapsedCategories, setCollapsedCategories] = useState({})
+  const [expandedNodes, setExpandedNodes] = useState({})
   const dropdownRef = useRef(null)
 
   // Close dropdown when clicking outside
@@ -75,6 +76,178 @@ function HistoryPanel({ collapsed, onToggle, onSessionClick, onReplay, onShare, 
   }
 
   const isCategoryCollapsed = (category) => collapsedCategories[category]
+
+  const toggleNode = (nodeId) => {
+    setExpandedNodes(prev => ({
+      ...prev,
+      [nodeId]: !prev[nodeId]
+    }))
+  }
+
+  const renderSessionWithVersions = (session) => {
+    const sessionId = session.id
+    const isExpanded = expandedNodes[sessionId]
+    const hasVersions = conversationVersions && Object.keys(conversationVersions).length > 0
+    const isCurrentSession = currentVersion.conversationId === sessionId
+
+    return (
+      <div key={sessionId} className="ml-4">
+        <div 
+          className={`flex items-center gap-2 py-2 px-3 rounded cursor-pointer hover:bg-gray-100 ${
+            isCurrentSession ? 'bg-blue-50 border-l-2 border-blue-500' : ''
+          }`}
+          onClick={() => hasVersions && toggleNode(sessionId)}
+        >
+          {/* Expand/Collapse Icon */}
+          <div className="w-4 h-4 flex items-center justify-center">
+            {hasVersions ? (
+              <svg 
+                className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            ) : (
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+            )}
+          </div>
+
+          {/* Session Icon */}
+          <div className="w-4 h-4 flex items-center justify-center">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+
+          {/* Session Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm text-gray-600 hover:text-yellow-ai-purple transition-colors truncate">
+                {session.name}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs text-gray-400">
+              <span>{session.timestamp}</span>
+              <span>Last: {session.lastModified}</span>
+            </div>
+          </div>
+
+          {/* Message Count Badge */}
+          {hasVersions && (
+            <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              {Object.keys(conversationVersions).length} messages
+            </span>
+          )}
+
+          {/* Options Button */}
+          <button 
+            className="p-1 text-gray-400 hover:text-gray-600 transition-colors ml-2 flex-shrink-0"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleDropdownToggle(sessionId)
+            }}
+          >
+            ⋯
+          </button>
+        </div>
+
+        {/* Message Versions Tree */}
+        {hasVersions && isExpanded && (
+          <div className="ml-6 mt-1">
+            {Object.entries(conversationVersions).map(([conversationId, conversation]) => {
+              const messageVersions = conversation.messageVersions || {}
+              
+              return Object.entries(messageVersions).map(([messageId, versions]) => {
+                const isCurrentMessage = currentVersion.originalMessageId === messageId
+                
+                return (
+                  <div key={`${conversationId}-${messageId}`} className="mb-2">
+                    {/* Message Node */}
+                    <div 
+                      className={`flex items-center gap-2 py-1 px-2 rounded cursor-pointer hover:bg-gray-50 ${
+                        isCurrentMessage ? 'bg-yellow-50 border-l-2 border-yellow-500' : ''
+                      }`}
+                      onClick={() => toggleNode(`${conversationId}-${messageId}`)}
+                    >
+                      {/* Message Icon */}
+                      <div className="w-3 h-3 flex items-center justify-center">
+                        <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      </div>
+
+                      {/* Message Info */}
+                      <div className="flex-1">
+                        <span className="text-xs text-gray-600">
+                          💬 Message {messageId.split('_')[1]}
+                        </span>
+                        <div className="text-xs text-gray-400">
+                          {versions.length} versions
+                        </div>
+                      </div>
+
+                      {/* Expand Icon */}
+                      <svg 
+                        className={`w-3 h-3 transition-transform ${expandedNodes[`${conversationId}-${messageId}`] ? 'rotate-90' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+
+                    {/* Message Versions */}
+                    {expandedNodes[`${conversationId}-${messageId}`] && (
+                      <div className="ml-6 mt-1">
+                        {versions.map((version, index) => {
+                          const isCurrentVersion = currentVersion.conversationId === conversationId && 
+                                                currentVersion.version === version.version &&
+                                                currentVersion.originalMessageId === messageId
+                          
+                          return (
+                            <div 
+                              key={version.id}
+                              className={`flex items-center gap-2 py-1 px-2 rounded cursor-pointer hover:bg-gray-50 ${
+                                isCurrentVersion ? 'bg-green-50 border-l-2 border-green-500' : ''
+                              }`}
+                              onClick={() => onLoadVersion(conversationId, version.version, messageId)}
+                            >
+                              {/* Version Icon */}
+                              <div className="w-3 h-3 flex items-center justify-center">
+                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              </div>
+
+                              {/* Version Info */}
+                              <div className="flex-1">
+                                <span className="text-xs text-gray-600">
+                                  Version {version.version}
+                                </span>
+                                <div className="text-xs text-gray-400">
+                                  {new Date(version.timestamp).toLocaleTimeString()}
+                                </div>
+                              </div>
+
+                              {/* Current Version Indicator */}
+                              {isCurrentVersion && (
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              })
+            })}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   console.log('HistoryPanel component rendering...', { collapsed })
 
@@ -126,6 +299,12 @@ function HistoryPanel({ collapsed, onToggle, onSessionClick, onReplay, onShare, 
                   const sessionId = `${category}-${index}`
                   const isDropdownOpen = openDropdown === sessionId
                   
+                  // Use tree structure for Instances category
+                  if (category === 'Instances') {
+                    return renderSessionWithVersions(session)
+                  }
+                  
+                  // Use regular structure for other categories
                   return (
                     <div key={sessionId} className={`history-item ${collapsed ? 'collapsed' : ''} relative`}>
                       <div 

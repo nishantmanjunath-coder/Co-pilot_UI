@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function AnalysisPanel({ collapsed, onToggle, onReplayConversation }) {
+function AnalysisPanel({ collapsed, onToggle, onReplayConversation, showFeedbackNotification, onFeedbackSubmit }) {
   const [activeTab, setActiveTab] = useState('Analyze')
   const [showNotification, setShowNotification] = useState(false)
 
@@ -246,6 +246,40 @@ function AnalysisPanel({ collapsed, onToggle, onReplayConversation }) {
           <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
             <span>✅</span>
             <span className="font-medium">Added to-do list</span>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Notification */}
+      {showFeedbackNotification && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Debug Analysis Complete</h3>
+              <p className="text-gray-600 mb-6">Were the suggestions provided by the debugger helpful for your analysis?</p>
+              
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => onFeedbackSubmit(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  <span>👍</span>
+                  <span>Yes, Suggestions Helpful</span>
+                </button>
+                <button
+                  onClick={() => onFeedbackSubmit(false)}
+                  className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                >
+                  <span>👎</span>
+                  <span>Suggestions Not Helpful</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Message from './Message'
 
-function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isReplaying, onLoadExample, debugEnabled, selectedMessageId, onMessageSelect, onRegenerateMessage }) {
+function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isReplaying, onLoadExample, debugEnabled, selectedMessageId, onMessageSelect, onRegenerateMessage, versionInfo, onVersionNavigation }) {
   const quickActions = [
     'Failed test cases',
     'Failed production cases', 
@@ -58,6 +58,18 @@ function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isR
   const handlePreviewOption = (option) => {
     console.log(`Preview option selected: ${option}`)
     setPreviewDropdownOpen(false)
+    
+    // Store the current conversation state for the selected preview channel
+    const conversationState = {
+      messages: messages,
+      timestamp: new Date().toISOString(),
+      channel: option,
+      version: 1
+    }
+    
+    // This would typically save to a backend or local storage
+    // For now, we'll just log it
+    console.log('Saving conversation state for channel:', option, conversationState)
   }
 
   const handleQuickAction = (action) => {
@@ -86,7 +98,12 @@ function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isR
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             onClick={() => setPreviewDropdownOpen(!previewDropdownOpen)}
           >
-            Preview
+            <span>Preview</span>
+            {versionInfo && versionInfo.total > 1 && (
+              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                v{versionInfo.current}
+              </span>
+            )}
             <span className={`transition-transform duration-200 ${previewDropdownOpen ? 'rotate-180' : ''}`}>▼</span>
           </button>
           
@@ -238,6 +255,8 @@ function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isR
                 isSelected={selectedMessageId === message.id}
                 onSelect={() => onMessageSelect(message.id)}
                 onRegenerate={onRegenerateMessage}
+                versionInfo={versionInfo}
+                onVersionNavigation={onVersionNavigation}
               />
             ))}
           </div>

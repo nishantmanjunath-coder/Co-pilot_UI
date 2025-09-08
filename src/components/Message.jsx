@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Message({ message, debugEnabled, isSelected, onSelect, onRegenerate }) {
+function Message({ message, debugEnabled, isSelected, onSelect, onRegenerate, versionInfo, onVersionNavigation }) {
   const isUser = message.type === 'user'
 
   console.log('Message component rendering:', message.type)
@@ -77,6 +77,55 @@ function Message({ message, debugEnabled, isSelected, onSelect, onRegenerate }) 
           }`}
           onClick={handleMessageClick}
         >
+          {/* Version Navigation - Only show for assistant messages with versions */}
+          {!isUser && versionInfo && versionInfo.total > 1 && (
+            <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onVersionNavigation('prev')
+                  }}
+                  disabled={!versionInfo.canGoPrev}
+                  className={`p-1 rounded ${
+                    versionInfo.canGoPrev 
+                      ? 'text-gray-600 hover:bg-gray-200' 
+                      : 'text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
+                <span className="text-xs text-gray-600 font-medium">
+                  {versionInfo.current}/{versionInfo.total}
+                </span>
+                
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onVersionNavigation('next')
+                  }}
+                  disabled={!versionInfo.canGoNext}
+                  className={`p-1 rounded ${
+                    versionInfo.canGoNext 
+                      ? 'text-gray-600 hover:bg-gray-200' 
+                      : 'text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                Version {versionInfo.current}
+              </div>
+            </div>
+          )}
+          
           <p className="text-sm">{message.content}</p>
           
           {/* Metrics Icons - Only show for assistant messages */}
