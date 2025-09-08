@@ -217,6 +217,37 @@ function App() {
     setSelectedMessageId(messageId)
   }
 
+  const handleRegenerateMessage = (message) => {
+    // Generate a new response for the selected message
+    const newResponse = {
+      id: Date.now(),
+      type: 'assistant',
+      content: `Here's a regenerated response for: "${message.content}". This is a new, improved version of the previous answer.`,
+      timestamp: new Date().toLocaleTimeString(),
+      metrics: { 
+        cost: (Math.random() * 0.1 + 0.15).toFixed(2) + '$', 
+        tokens: Math.floor(Math.random() * 1000 + 2000).toString(), 
+        latency: Math.floor(Math.random() * 10 + 15) + 'ms' 
+      },
+      debugLogs: [
+        { type: 'setting', text: 'agent set Language to English', timestamp: '1m' },
+        { type: 'personality', text: "agent's personality: Helpful, Regenerated", timestamp: '1m' },
+        { type: 'trigger', text: 'Message regeneration triggered by agent', timestamp: '1m', icon: '🔄' },
+        { type: 'instruction', text: 'Task instructions started by agent', timestamp: '1m' },
+        { type: 'guidance', text: 'agent followed the Guidance below', timestamp: 'now' },
+        { type: 'guidance', text: 'Provide improved response quality', timestamp: '' },
+        { type: 'thought', text: "agent's thoughts (Step 1) > Regenerating with improvements", timestamp: 'now', icon: '✨' }
+      ]
+    }
+
+    // Replace the message in the conversation
+    setMessages(prev => prev.map(msg => 
+      msg.id === message.id ? newResponse : msg
+    ))
+    
+    console.log('Message regenerated:', message.id)
+  }
+
   const handleAnalyzeClick = () => {
     // Open analysis panel and ensure debug panel is also open
     setAnalysisPanelCollapsed(false)
@@ -375,6 +406,7 @@ function App() {
             debugEnabled={!debugPanelCollapsed}
             selectedMessageId={selectedMessageId}
             onMessageSelect={handleMessageSelect}
+            onRegenerateMessage={handleRegenerateMessage}
           />
           
           {/* Debug Panel */}

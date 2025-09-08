@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Message({ message, debugEnabled, isSelected, onSelect }) {
+function Message({ message, debugEnabled, isSelected, onSelect, onRegenerate }) {
   const isUser = message.type === 'user'
 
   console.log('Message component rendering:', message.type)
@@ -8,6 +8,13 @@ function Message({ message, debugEnabled, isSelected, onSelect }) {
   const handleMessageClick = () => {
     if (debugEnabled && !isUser && onSelect) {
       onSelect()
+    }
+  }
+
+  const handleRegenerate = (e) => {
+    e.stopPropagation() // Prevent message selection when clicking regenerate
+    if (onRegenerate) {
+      onRegenerate(message)
     }
   }
 
@@ -74,30 +81,44 @@ function Message({ message, debugEnabled, isSelected, onSelect }) {
           
           {/* Metrics Icons - Only show for assistant messages */}
           {!isUser && (
-            <div className="flex items-center gap-3 mt-3 pt-2 border-t border-gray-200">
-              {/* Cost Icon */}
-              <div className="flex items-center gap-1">
-                <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-                  <span className="text-yellow-800 text-xs font-bold">$</span>
+            <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-200">
+              <div className="flex items-center gap-3">
+                {/* Cost Icon */}
+                <div className="flex items-center gap-1">
+                  <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <span className="text-yellow-800 text-xs font-bold">$</span>
+                  </div>
+                  <span className="text-xs text-gray-600 font-medium">{metrics.cost}</span>
                 </div>
-                <span className="text-xs text-gray-600 font-medium">{metrics.cost}</span>
+                
+                {/* Token Count Icon */}
+                <div className="flex items-center gap-1">
+                  <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">🏷️</span>
+                  </div>
+                  <span className="text-xs text-gray-600 font-medium">{metrics.tokens}</span>
+                </div>
+                
+                {/* Latency Icon */}
+                <div className="flex items-center gap-1">
+                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs">🕒</span>
+                  </div>
+                  <span className="text-xs text-gray-600 font-medium">{metrics.latency}</span>
+                </div>
               </div>
               
-              {/* Token Count Icon */}
-              <div className="flex items-center gap-1">
-                <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">🏷️</span>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">{metrics.tokens}</span>
-              </div>
-              
-              {/* Latency Icon */}
-              <div className="flex items-center gap-1">
-                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">🕒</span>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">{metrics.latency}</span>
-              </div>
+              {/* Regenerate Button */}
+              <button
+                onClick={handleRegenerate}
+                className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded transition-colors duration-200"
+                title="Regenerate response"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Regenerate</span>
+              </button>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Message from './Message'
 
-function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isReplaying, onLoadExample, debugEnabled, selectedMessageId, onMessageSelect }) {
+function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isReplaying, onLoadExample, debugEnabled, selectedMessageId, onMessageSelect, onRegenerateMessage }) {
   const quickActions = [
     'Failed test cases',
     'Failed production cases', 
@@ -237,6 +237,7 @@ function ChatInterface({ messages, inputValue, setInputValue, onSendMessage, isR
                 debugEnabled={debugEnabled}
                 isSelected={selectedMessageId === message.id}
                 onSelect={() => onMessageSelect(message.id)}
+                onRegenerate={onRegenerateMessage}
               />
             ))}
           </div>
