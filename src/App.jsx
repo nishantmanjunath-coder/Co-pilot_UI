@@ -217,35 +217,86 @@ function App() {
     setSelectedMessageId(messageId)
   }
 
-  const handleRegenerateMessage = (message) => {
-    // Generate a new response for the selected message
-    const newResponse = {
-      id: Date.now(),
-      type: 'assistant',
-      content: `Here's a regenerated response for: "${message.content}". This is a new, improved version of the previous answer.`,
-      timestamp: new Date().toLocaleTimeString(),
-      metrics: { 
-        cost: (Math.random() * 0.1 + 0.15).toFixed(2) + '$', 
-        tokens: Math.floor(Math.random() * 1000 + 2000).toString(), 
-        latency: Math.floor(Math.random() * 10 + 15) + 'ms' 
-      },
-      debugLogs: [
-        { type: 'setting', text: 'agent set Language to English', timestamp: '1m' },
-        { type: 'personality', text: "agent's personality: Helpful, Regenerated", timestamp: '1m' },
-        { type: 'trigger', text: 'Message regeneration triggered by agent', timestamp: '1m', icon: '🔄' },
-        { type: 'instruction', text: 'Task instructions started by agent', timestamp: '1m' },
-        { type: 'guidance', text: 'agent followed the Guidance below', timestamp: 'now' },
-        { type: 'guidance', text: 'Provide improved response quality', timestamp: '' },
-        { type: 'thought', text: "agent's thoughts (Step 1) > Regenerating with improvements", timestamp: 'now', icon: '✨' }
-      ]
-    }
+  const handleRegenerateMessage = async (messageToRegenerate) => {
+    const messageIndex = messages.findIndex(msg => msg.id === messageToRegenerate.id)
+    if (messageIndex === -1) return
 
-    // Replace the message in the conversation
-    setMessages(prev => prev.map(msg => 
-      msg.id === message.id ? newResponse : msg
-    ))
+    // Get all messages up to and including the selected message
+    const conversationUpToMessage = messages.slice(0, messageIndex + 1)
     
-    console.log('Message regenerated:', message.id)
+    if (isReplaying) return // Prevent multiple replays
+
+    setIsReplaying(true)
+    setMessages([]) // Clear current messages
+    
+    console.log('Starting conversation replay up to message:', messageToRegenerate.id)
+    
+    // Stream messages one by one with realistic delays
+    for (let i = 0; i < conversationUpToMessage.length; i++) {
+      const message = conversationUpToMessage[i]
+      
+      // For the last message (the one being regenerated), create a new version
+      if (i === conversationUpToMessage.length - 1) {
+        const regeneratedMessage = {
+          ...message,
+          id: Date.now() + i, // New ID to ensure re-rendering
+          content: `Here's a regenerated response for: "${message.content}". This is a new, improved version of the previous answer.`,
+          timestamp: new Date().toLocaleTimeString(),
+          metrics: { 
+            cost: (Math.random() * 0.1 + 0.15).toFixed(2) + '$', 
+            tokens: Math.floor(Math.random() * 1000 + 2000).toString(), 
+            latency: Math.floor(Math.random() * 10 + 15) + 'ms' 
+          },
+          debugLogs: [
+            { type: 'setting', text: 'agent set Language to English', timestamp: '1m' },
+            { type: 'personality', text: "agent's personality: Helpful, Regenerated", timestamp: '1m' },
+            { type: 'trigger', text: 'Message regeneration triggered by agent', timestamp: '1m', icon: '🔄' },
+            { type: 'instruction', text: 'Task instructions started by agent', timestamp: '1m' },
+            { type: 'guidance', text: 'agent followed the Guidance below', timestamp: 'now' },
+            { type: 'guidance', text: 'Provide improved response quality', timestamp: '' },
+            { type: 'thought', text: "agent's thoughts (Step 1) > Regenerating with improvements", timestamp: 'now', icon: '✨' }
+          ]
+        }
+        
+        // Add the regenerated message
+        setMessages(prev => [...prev, regeneratedMessage])
+        
+        // Stream the regenerated message content character by character
+        if (message.type === 'assistant') {
+          const fullContent = regeneratedMessage.content
+          let currentContent = ''
+          
+          for (let j = 0; j < fullContent.length; j++) {
+            currentContent += fullContent[j]
+            
+            setMessages(prevMessages => {
+              const updatedMessages = [...prevMessages]
+              const lastMessageIndex = updatedMessages.length - 1
+              if (lastMessageIndex >= 0) {
+                updatedMessages[lastMessageIndex] = {
+                  ...updatedMessages[lastMessageIndex],
+                  content: currentContent
+                }
+              }
+              return updatedMessages
+            })
+            
+            // Add a small delay to simulate typing
+            await new Promise(resolve => setTimeout(resolve, 20))
+          }
+        }
+      } else {
+        // For all other messages, add them normally
+        setMessages(prev => [...prev, message])
+      }
+      
+      // Wait before showing next message (realistic typing/response time)
+      const delay = message.type === 'user' ? 800 : 1200
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+    
+    setIsReplaying(false)
+    console.log('Conversation replay completed up to regenerated message')
   }
 
   const handleAnalyzeClick = () => {
